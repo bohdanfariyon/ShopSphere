@@ -6,14 +6,14 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
 
 from user.serializers import (
-    UserSerializers,
+    UserSerializer,
     AuthTokenSerializer,
 )
 
 
 class CreateUserView(generics.CreateAPIView):
     """Creater a new user in the system"""
-    serializer_class = UserSerializers
+    serializer_class = UserSerializer
 
 class CreateTokenView(ObtainAuthToken):
     """Create a new auth token for user"""
@@ -22,7 +22,7 @@ class CreateTokenView(ObtainAuthToken):
 
 class ManageUserView(generics.RetrieveUpdateAPIView):
     """Manage the authenticated user"""
-    serializer_class = UserSerializers
+    serializer_class = UserSerializer
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
