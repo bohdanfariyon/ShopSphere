@@ -74,16 +74,26 @@ class ProductView(viewsets.ReadOnlyModelViewSet):
         except Category.DoesNotExist:
         # Якщо категорії не існує, повертаємо порожній queryset
             return self.queryset.none()
-        
+    @extend_schema(
+        request=serializers.ReviewSerializer,
+        responses={201: serializers.ReviewSerializer},
+    )
     @action(methods=['POST'], detail=True, url_path='add-feedback')
-    def addFedback(self, request, pk=None):
+    def add_feedback(self, request, pk=None):
+        """Add feedback to product"""
         product = self.get_object()
         
-        serializer = self.get_serializer(product, data=request.data)
-
+        # Додаємо product_id до даних запиту
+        data = request.data.copy()
+        data['product'] = product.id
+        
+        serializer = serializers.ReviewSerializer(data=data)  # Явно вказуємо ReviewSerializer
+        
         if serializer.is_valid():
-            serializer.save(user=self.request.user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            review = serializer.save(user=self.request.user)
+            return Response(
+                serializers.ReviewSerializer(review).data,  
+                status=status.HTTP_201_CREATED
+            )
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-

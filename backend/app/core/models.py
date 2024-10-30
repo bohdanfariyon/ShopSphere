@@ -55,15 +55,7 @@ class Category(models.Model):
         return self.name
 
 
-class Review(models.Model):
-    """Review"""
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-    )
-    rating = models.IntegerField()
-    comment = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
+
 
 
 class Product(models.Model):
@@ -80,11 +72,28 @@ class Product(models.Model):
     discount_type = models.CharField(max_length=10, choices=DISCOUNT_TYPE_CHOICES, default='percentage')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    review = models.ManyToManyField('Review', blank=True)
     
     def __str__(self):
         return self.name
 
+class Review(models.Model):
+    """Review model"""
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='reviews'
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='reviews'
+    )
+    rating = models.IntegerField()
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Review for {self.product.name} by {self.user.email}"
 
 class Order(models.Model):
     """Order"""
