@@ -1,59 +1,62 @@
-"""
-Django admin customization
-"""
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib import admin 
-from django.utils.translation import gettext_lazy as _
+from django.contrib import admin
+from .models import User, Category, Product, Review, Order, OrderItem, Cart, CartItem
 
-from core import models
+class UserAdmin(admin.ModelAdmin):
+    """Admin panel for User management."""
+    list_display = ['email', 'name', 'phone_number', 'address', 'is_active', 'is_staff', 'created_at', 'updated_at']
+    list_filter = ['is_active', 'is_staff']
+    search_fields = ['email', 'name']
+    ordering = ['email']
+
+class CategoryAdmin(admin.ModelAdmin):
+    """Admin panel for Category management."""
+    list_display = ['name']
+    search_fields = ['name']
+
+class ProductAdmin(admin.ModelAdmin):
+    """Admin panel for Product management."""
+    list_display = ['name', 'price', 'quantity', 'category', 'discount', 'discount_type', 'created_at', 'updated_at']
+    list_filter = ['category', 'discount_type']
+    search_fields = ['name', 'description']
+    ordering = ['name']
+
+class ReviewAdmin(admin.ModelAdmin):
+    """Admin panel for Review management."""
+    list_display = ['user', 'product', 'rating', 'created_at']
+    list_filter = ['rating']
+    search_fields = ['user__email', 'product__name']
+    ordering = ['created_at']
+
+class OrderItemAdmin(admin.TabularInline):
+    """Inline admin for OrderItems."""
+    model = OrderItem
+    extra = 0
+
+class OrderAdmin(admin.ModelAdmin):
+    """Admin panel for Order management."""
+    list_display = ['id', 'user', 'status', 'total_price', 'created_at']
+    list_filter = ['status', 'created_at']
+    search_fields = ['user__email']
+    ordering = ['created_at']
+    inlines = [OrderItemAdmin]  # Додаємо OrderItemAdmin як інлайн
 
 
-class UserAdmin(BaseUserAdmin):
-    """Define the admin pages for users."""
-    ordering = ['id']
-    list_display = ['email', 'name', 'phone_number', 'address', 'is_active', 'is_staff']  # Додано нові поля
-    fieldsets = (
-        (None, {"fields": ("email", "password")}),
-        (
-            _("Personal info"),
-            {
-                "fields": ("name", "phone_number", "address"),  # Додано нові поля
-            },
-        ),
-        (
-            _("Permissions"),
-            {
-                "fields": (
-                    "is_active",
-                    "is_staff",
-                    "is_superuser",
-                ),
-            },
-        ),
-        (_("Important dates"), {"fields": ("last_login", "created_at", "updated_at")}),  # Додано нові поля
-    )
-    readonly_fields = ['last_login', 'created_at', 'updated_at']  # Додано нові поля
+class CartAdmin(admin.ModelAdmin):
+    """Admin panel for Cart management."""
+    list_display = ['user']
+    search_fields = ['user__email']
+    
+class CartItemAdmin(admin.TabularInline):
+    """Inline admin for CartItems."""
+    model = CartItem
+    extra = 0
 
-    add_fieldsets = (
-        (
-            None,
-            {
-                "classes": ("wide",),
-                "fields": (
-                    "email", 
-                    "password1", 
-                    "password2",
-                    "name",
-                    "phone_number",  # Додано нове поле
-                    "address",  # Додано нове поле
-                    "is_active",
-                    "is_staff",
-                    "is_superuser",
-                ),
-            },
-        ),
-    )
+# Registering models with the admin site
+admin.site.register(User, UserAdmin)
+admin.site.register(Category, CategoryAdmin)
+admin.site.register(Product, ProductAdmin)
+admin.site.register(Review, ReviewAdmin)
+admin.site.register(Order, OrderAdmin)
+admin.site.register(Cart, CartAdmin)
 
-admin.site.register(models.User, UserAdmin)
-admin.site.register(models.Product)
-admin.site.register(models.Category)
+
