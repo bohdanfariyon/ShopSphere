@@ -1,8 +1,15 @@
-// components/Layout/Header.jsx
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../store/authSlice';
+import { 
+  ShoppingCart, 
+  LogIn, 
+  UserPlus, 
+  LogOut, 
+  User, 
+  Store 
+} from 'lucide-react';
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -11,15 +18,13 @@ const Header = () => {
 
   const handleLogout = () => {
     dispatch(logout());
-    localStorage.removeItem('token'); // Видалити токен при виході
+    localStorage.removeItem('token');
   };
 
-  // Перевірка токена при монтуванні компонента
   useEffect(() => {
-    const token = localStorage.getItem('token'); // Перевірка наявності токена
+    const token = localStorage.getItem('token');
     if (token) {
-      // Якщо токен є, можете також додати логіку для отримання даних про користувача
-      // dispatch(fetchUserData(token)); // Ваша функція для отримання даних
+      // Логіка для отримання даних про користувача
     }
   }, [dispatch]);
 
@@ -27,31 +32,51 @@ const Header = () => {
     <header className="bg-white shadow-md">
       <nav className="container mx-auto px-6 py-3">
         <div className="flex justify-between items-center">
-          <Link to="/" className="text-xl font-bold">
-            Shop
+          <Link to="/" className="text-xl font-bold flex items-center space-x-2">
+            <Store className="h-6 w-6" />
+            <span>Shop</span>
           </Link>
-          <div className="flex items-center space-x-4">
-            <Link to="/cart" className="hover:text-blue-500">
-              Cart ({items.length})
+          <div className="flex items-center space-x-6">
+            <Link 
+              to="/cart" 
+              className="hover:text-blue-500 flex items-center space-x-1"
+            >
+              <ShoppingCart className="h-5 w-5" />
+              <span>({items.length})</span>
             </Link>
-            {user || localStorage.getItem('token') ? ( // Перевірка чи є користувач або токен
+            
+            {user || localStorage.getItem('token') ? (
               <>
-                
-                <Link to="/profile">Profile</Link>
+                <Link 
+                  to="/profile" 
+                  className="hover:text-blue-500 flex items-center space-x-1"
+                >
+                  <User className="h-5 w-5" />
+                  <span>Profile</span>
+                </Link>
                 <button
                   onClick={handleLogout}
-                  className="hover:text-blue-500"
+                  className="hover:text-blue-500 flex items-center space-x-1"
                 >
-                  Logout
+                  <LogOut className="h-5 w-5" />
+                  <span>Logout</span>
                 </button>
               </>
             ) : (
               <>
-                <Link to="/login" className="hover:text-blue-500">
-                  Login
+                <Link 
+                  to="/login" 
+                  className="hover:text-blue-500 flex items-center space-x-1"
+                >
+                  <LogIn className="h-5 w-5" />
+                  <span>Login</span>
                 </Link>
-                <Link to="/register" className="hover:text-blue-500">
-                  Register
+                <Link 
+                  to="/register" 
+                  className="hover:text-blue-500 flex items-center space-x-1"
+                >
+                  <UserPlus className="h-5 w-5" />
+                  <span>Register</span>
                 </Link>
               </>
             )}
