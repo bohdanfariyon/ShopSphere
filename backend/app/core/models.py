@@ -78,7 +78,7 @@ class Product(db.models.Model):
     price = db.models.DecimalField(max_digits=10, decimal_places=2)
     quantity = db.models.IntegerField()
     category = db.models.ForeignKey(Category, on_delete=db.models.CASCADE)
-    discount = db.models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    discount = db.models.DecimalField(max_digits=10, decimal_places=2, default=0)
     discount_type = db.models.CharField(max_length=10, choices=DISCOUNT_TYPE_CHOICES, default='percentage')
     created_at = db.models.DateTimeField(auto_now_add=True)
     updated_at = db.models.DateTimeField(auto_now=True)

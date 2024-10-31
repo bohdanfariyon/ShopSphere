@@ -19,7 +19,11 @@ const CartList = () => {
   };
 
   if (loading) {
-    return <div>Loading cart...</div>;
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+      </div>
+    );
   }
 
   const total = items.reduce((sum, item) => {
@@ -32,34 +36,40 @@ const CartList = () => {
   
     return sum + priceWithDiscount * item.quantity;
   }, 0);
-  
 
   return (
-    <div>
+    <div className="bg-white rounded-lg shadow-lg p-6">
       {items.length === 0 ? (
-        <p className="text-center py-8">Your cart is empty</p>
+        <div className="flex flex-col items-center justify-center py-12">
+          <svg className="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+          <p className="text-xl text-gray-500 font-medium">Your cart is empty</p>
+        </div>
       ) : (
         <>
-          <div className="space-y-4">
+          <div className="divide-y divide-gray-200">
             {items.map((item) => (
               <CartItem key={item.id} item={item} />
             ))}
           </div>
-          <div className="mt-8 border-t pt-4">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-xl font-bold">Total:</span>
-              <span className="text-xl">${total.toFixed(2)}</span>
+          <div className="mt-8 border-t border-gray-200 pt-6">
+            <div className="flex justify-between items-center mb-6">
+              <span className="text-2xl font-bold text-gray-900">Total:</span>
+              <span className="text-2xl font-bold text-gray-900">
+                ${total.toFixed(2)}
+              </span>
             </div>
             <div className="flex gap-4">
               <button
                 onClick={handleClearCart}
-                className="px-4 py-2 border border-red-500 text-red-500 rounded hover:bg-red-50"
+                className="flex-1 px-6 py-3 border-2 border-red-500 text-red-500 font-medium rounded-lg hover:bg-red-50 transition-colors duration-200"
               >
                 Clear Cart
               </button>
               <button
                 onClick={handlePlaceOrder}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                className="flex-1 px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors duration-200"
               >
                 Place Order
               </button>

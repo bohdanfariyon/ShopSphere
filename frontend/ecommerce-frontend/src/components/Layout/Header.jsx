@@ -34,19 +34,20 @@ const Header = () => {
         <div className="flex justify-between items-center">
           <Link to="/" className="text-xl font-bold flex items-center space-x-2">
             <Store className="h-6 w-6" />
-            <span>Shop</span>
+            <span>Shop Sphere</span>
           </Link>
           <div className="flex items-center space-x-6">
-            <Link 
-              to="/cart" 
-              className="hover:text-blue-500 flex items-center space-x-1"
-            >
-              <ShoppingCart className="h-5 w-5" />
-              <span>({items.length})</span>
-            </Link>
+            
             
             {user || localStorage.getItem('token') ? (
               <>
+                <Link 
+                  to="/cart" 
+                  className="hover:text-blue-500 flex items-center space-x-1"
+                >
+                  <ShoppingCart className="h-5 w-5" />
+                  
+                </Link>
                 <Link 
                   to="/profile" 
                   className="hover:text-blue-500 flex items-center space-x-1"
