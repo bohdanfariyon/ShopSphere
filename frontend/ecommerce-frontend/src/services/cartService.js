@@ -5,7 +5,10 @@ import { API_ENDPOINTS } from './api';
 export const cartService = {
   getCart: async () => {
     const response = await axios.get(API_ENDPOINTS.CART);
-    return response.data;
+    
+    const items = response.data[0];
+    console.log(items);
+    return items;
   },
 
   addToCart: async (productId, quantity) => {

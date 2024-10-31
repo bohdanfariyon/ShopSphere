@@ -130,7 +130,7 @@ class ProductView(viewsets.ReadOnlyModelViewSet):
             # Add product_id to the request data
             data['product'] = product.id
             
-            serializer = serializers.CartItemSerializer(data=data)
+            serializer = serializers.Cart1ItemSerializer(data=data)
             
             if serializer.is_valid():
                 cart, created = Cart.objects.get_or_create(user=self.request.user)
@@ -139,7 +139,7 @@ class ProductView(viewsets.ReadOnlyModelViewSet):
                 # Optionally return the updated cart data or cart item
                 return Response(
                     {
-                        "cart_item": serializers.CartItemSerializer(cart_item).data,
+                        "cart_item": serializers.Cart1ItemSerializer(cart_item).data,
                         "message": "Product added to cart successfully."
                     },
                     status=status.HTTP_201_CREATED
@@ -154,6 +154,9 @@ class CartView(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Cart.objects.all()
     serializer_class = serializers.ListCartSerializer
 
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
+    
     @action(detail=True, methods=['delete'], url_path='delete-item')
     def delete_item(self, request, pk=None):
         try:

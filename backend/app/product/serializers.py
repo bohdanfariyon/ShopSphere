@@ -39,7 +39,20 @@ class DetailProductSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'name', 'price', 'discount', 'category', 'description', 'reviews']
 
 
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'description', 'price', 'quantity', 'category', 'discount', 'discount_type', 'created_at', 'updated_at', 'image']
+
+class Cart1ItemSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = CartItem
+        fields = ['id', 'quantity', 'product']
+        read_only_fields = ['id']
+
 class CartItemSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)
     class Meta:
         model = CartItem
         fields = ['id', 'quantity', 'product']
@@ -55,3 +68,4 @@ class ListCartSerializer(serializers.ModelSerializer):
 
 class ChangeQuantitySerializer(serializers.Serializer):
     change = serializers.IntegerField(help_text="The amount to change the quantity by.")
+
