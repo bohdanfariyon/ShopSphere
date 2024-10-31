@@ -14,8 +14,8 @@ ARG DEV=false
 RUN python -m venv /py && \
     /py/bin/pip install --upgrade pip && \
     apt-get update && \
-    apt-get install -y postgresql-client && \
-    apt-get install -y --no-install-recommends build-essential libpq-dev && \
+    apt-get install -y postgresql-client libjpeg-dev && \
+    apt-get install -y --no-install-recommends build-essential libpq-dev zlib1g-dev && \
     /py/bin/pip install -r /tmp/requirements.txt && \
     if [ "$DEV" = "true" ]; then \
         /py/bin/pip install -r /tmp/requirements.dev.txt ; \
@@ -23,7 +23,11 @@ RUN python -m venv /py && \
     rm -rf /var/lib/apt/lists/* /tmp/* && \
     apt-get purge -y --auto-remove build-essential libpq-dev && \
     apt-get clean && \
-    adduser --disabled-password --no-create-home django-user
+    adduser --disabled-password --no-create-home django-user && \
+    mkdir -p /vol/web/media && \
+    mkdir -p /vol/web/static && \
+    chown -R django-user:django-user /vol && \
+    chmod -R 755 /vol
 
 # Add the virtual environment to PATH
 ENV PATH="/py/bin:$PATH"

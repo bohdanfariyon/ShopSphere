@@ -5,6 +5,15 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
+import uuid
+import os 
+
+
+def recipe_image_file_path(instance, filename):
+    """Generate file path for new recipe image"""
+    ext = os.path.splitext(filename)[1]
+    filename = f'{uuid.uuid4()}{ext}'
+    return os.path.join('uploads', 'recipe', filename)
 
 
 class UserManager(BaseUserManager):
@@ -73,6 +82,7 @@ class Product(db.models.Model):
     discount_type = db.models.CharField(max_length=10, choices=DISCOUNT_TYPE_CHOICES, default='percentage')
     created_at = db.models.DateTimeField(auto_now_add=True)
     updated_at = db.models.DateTimeField(auto_now=True)
+    image = db.models.ImageField(null=True, upload_to=recipe_image_file_path)
     
     def __str__(self):
         return self.name

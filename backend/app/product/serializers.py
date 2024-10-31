@@ -26,8 +26,8 @@ class ListProductSerializer(serializers.ModelSerializer):
     category = CategorySerializer()
     class Meta:
         model = Product
-        fields = ['id', 'name', 'price', 'discount', 'category', 'quantity']
-        read_only_fields = ['id', 'name', 'price', 'discount', 'category', 'quantity']
+        fields = ['id', 'name', 'price', 'discount', 'category', 'quantity', 'image']
+        read_only_fields = ['id', 'name', 'price', 'discount', 'category', 'quantity', 'image']
 
 class DetailProductSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
