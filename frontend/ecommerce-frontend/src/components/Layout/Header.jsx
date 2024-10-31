@@ -1,5 +1,5 @@
 // components/Layout/Header.jsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../store/authSlice';
@@ -11,7 +11,17 @@ const Header = () => {
 
   const handleLogout = () => {
     dispatch(logout());
+    localStorage.removeItem('token'); // Видалити токен при виході
   };
+
+  // Перевірка токена при монтуванні компонента
+  useEffect(() => {
+    const token = localStorage.getItem('token'); // Перевірка наявності токена
+    if (token) {
+      // Якщо токен є, можете також додати логіку для отримання даних про користувача
+      // dispatch(fetchUserData(token)); // Ваша функція для отримання даних
+    }
+  }, [dispatch]);
 
   return (
     <header className="bg-white shadow-md">
@@ -21,15 +31,13 @@ const Header = () => {
             Shop
           </Link>
           <div className="flex items-center space-x-4">
-            <Link to="/" className="hover:text-blue-500">
-              Products
-            </Link>
             <Link to="/cart" className="hover:text-blue-500">
               Cart ({items.length})
             </Link>
-            {user ? (
+            {user || localStorage.getItem('token') ? ( // Перевірка чи є користувач або токен
               <>
-                <span>{user.email}</span>
+                
+                <Link to="/profile">Profile</Link>
                 <button
                   onClick={handleLogout}
                   className="hover:text-blue-500"

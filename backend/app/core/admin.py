@@ -34,12 +34,16 @@ class OrderItemAdmin(admin.TabularInline):
 
 class OrderAdmin(admin.ModelAdmin):
     """Admin panel for Order management."""
-    list_display = ['id', 'user', 'status', 'total_price', 'created_at']
+    list_display = ['id', 'user', 'user_address', 'status', 'total_price', 'created_at']  # Додано user_address
     list_filter = ['status', 'created_at']
     search_fields = ['user__email']
     ordering = ['created_at']
     inlines = [OrderItemAdmin]  # Додаємо OrderItemAdmin як інлайн
 
+    def user_address(self, obj):
+        return obj.user.address  # Відображаємо адресу користувача
+
+    user_address.short_description = 'User Address'  # Заголовок стовпця
 
 class CartAdmin(admin.ModelAdmin):
     """Admin panel for Cart management."""
@@ -58,5 +62,3 @@ admin.site.register(Product, ProductAdmin)
 admin.site.register(Review, ReviewAdmin)
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Cart, CartAdmin)
-
-
