@@ -42,6 +42,7 @@ const CartItem = ({ item }) => {
         <button
           onClick={() => handleUpdateQuantity(-1)}
           className="px-2 py-1 border rounded"
+          disabled={item.quantity== 1}
         >
           -
         </button>
@@ -49,9 +50,11 @@ const CartItem = ({ item }) => {
         <button
           onClick={() => handleUpdateQuantity(1)}
           className="px-2 py-1 border rounded"
+          disabled={item.product.quantity <= 0} // Деактивуємо кнопку, якщо кількість товару <= 0
         >
           +
         </button>
+
         <button
           onClick={handleRemove}
           className="text-red-500"

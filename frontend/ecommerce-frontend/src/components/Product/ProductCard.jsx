@@ -23,42 +23,44 @@ const ProductCard = ({ product }) => {
           {product.name}
         </Link>
         <div>
-  <p className="text-gray-600">
-    {product.discount > 0 && product.discount_type && product.price ? (
-      <>
-        <del>${product.price}</del> {/* Перекреслена стара ціна */}
-        <span className="ml-2">
-          ${product.discount_type === 'percentage' 
-            ? (product.price * (1 - product.discount / 100)).toFixed(2)
-            : (product.price - product.discount).toFixed(2)
-          }
-        </span>
-      </>
-    ) : (
-      <span>${product.price}</span> // Відображення звичайної ціни, якщо знижки немає
-    )}
-  </p>
+          <p className="text-gray-600">
+            {product.discount > 0 && product.discount_type && product.price ? (
+              <>
+                <del>${product.price}</del> {/* Перекреслена стара ціна */}
+                <span className="ml-2">
+                  ${product.discount_type === 'percentage' 
+                    ? (product.price * (1 - product.discount / 100)).toFixed(2)
+                    : (product.price - product.discount).toFixed(2)
+                  }
+                </span>
+              </>
+            ) : (
+              <span>${product.price}</span> // Відображення звичайної ціни, якщо знижки немає
+            )}
+          </p>
 
-  {product.discount > 0 && product.discount_type && (
-    product.discount_type === 'percentage' ? (
-      <p className="text-red-500">
-        Discount: {product.discount}%
-      </p>
-    ) : (
-      <p className="text-red-500">
-        Discount: ${product.discount}
-      </p>
-    )
-  )}
-</div>
+          {product.discount > 0 && product.discount_type && (
+            product.discount_type === 'percentage' ? (
+              <p className="text-red-500">
+                Discount: {product.discount}%
+              </p>
+            ) : (
+              <p className="text-red-500">
+                Discount: ${product.discount}
+              </p>
+            )
+          )}
+        </div>
 
 
         <button
           onClick={handleAddToCart}
-          className="mt-2 bg-blue-500 text-white px-4 py-2 rounded"
+          className={`mt-2 bg-blue-500 text-white px-4 py-2 rounded ${product.quantity <= 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+          disabled={product.quantity <= 0}
         >
           Add to Cart
         </button>
+
       </div>
     </div>
   );
