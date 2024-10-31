@@ -250,7 +250,19 @@ class CartView(mixins.ListModelMixin, viewsets.GenericViewSet):
                 return Response({"detail": "Your cart is empty."}, status=status.HTTP_400_BAD_REQUEST)
             
             # Розраховуємо загальну суму
-            total_price = sum(item.product.price * item.quantity for item in cart_items)
+            items_price=[]
+            total_price=0
+            for item in cart_items:
+                if item.product.discount > 0:
+                    if item.product.discount_type == 'percentage':
+                        price = item.product.price * (1 - item.product.discount / 100)
+                    else:
+                        price = item.product.price - item.product.discount
+                else:   
+                    price = item.product.price
+                items_price.append(price)
+                total_price = total_price + (price * item.quantity)
+            
             
             # Створюємо замовлення
             order = Order.objects.create(
@@ -261,12 +273,12 @@ class CartView(mixins.ListModelMixin, viewsets.GenericViewSet):
             
             # Створюємо елементи замовлення
             order_items = []
-            for cart_item in cart_items:
+            for i in range (cart_items.count()):
                 order_item = OrderItem(
                     order=order,
-                    product=cart_item.product,
-                    quantity=cart_item.quantity,
-                    price=cart_item.product.price
+                    product=cart_items[i].product,
+                    quantity=cart_items[i].quantity,
+                    price=items_price[i]
                 )
                 order_items.append(order_item)
             OrderItem.objects.bulk_create(order_items)
@@ -279,3 +291,10 @@ class CartView(mixins.ListModelMixin, viewsets.GenericViewSet):
         
         except Cart.DoesNotExist:
             return Response({"detail": "Cart not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+    
+class CategoryView(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    queryset = Category.objects.all()
+    serializer_class = serializers.CategorySerializer

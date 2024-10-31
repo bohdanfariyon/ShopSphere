@@ -7,4 +7,5 @@ export const API_ENDPOINTS = {
   PRODUCTS: '/product/products/',
   CART: '/product/cartitems/',
   USER: '/user/me/',
+  CATEGORY:'/product/category/',
 };

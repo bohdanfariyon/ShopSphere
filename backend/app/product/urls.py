@@ -12,6 +12,7 @@ router = DefaultRouter()
 
 router.register('products', views.ProductView)
 router.register('cartitems', views.CartView)
+router.register('category', views.CategoryView)
 
 app_name = 'product'
 

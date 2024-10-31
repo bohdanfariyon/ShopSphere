@@ -20,4 +20,10 @@ export const productService = {
     );
     return response.data;
   },
+  getCategories: async () => {
+    const response = await axios.get(API_ENDPOINTS.CATEGORY);
+    return response.data;
+  },
 };
+
+export default productService;

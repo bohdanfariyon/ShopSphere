@@ -22,10 +22,17 @@ const CartList = () => {
     return <div>Loading cart...</div>;
   }
 
-  const total = items.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
-    0
-  );
+  const total = items.reduce((sum, item) => {
+    const priceWithDiscount = item.product.discount > 0 
+      ? (item.product.discount_type === 'percentage' 
+          ? (item.product.price * (1 - item.product.discount / 100))
+          : (item.product.price - item.product.discount)
+        )
+      : item.product.price;
+  
+    return sum + priceWithDiscount * item.quantity;
+  }, 0);
+  
 
   return (
     <div>

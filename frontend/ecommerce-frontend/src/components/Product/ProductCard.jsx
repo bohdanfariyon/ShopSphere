@@ -22,12 +22,37 @@ const ProductCard = ({ product }) => {
         <Link to={`/product/${product.id}`} className="text-lg font-semibold">
           {product.name}
         </Link>
-        <p className="text-gray-600">${product.price}</p>
-        {product.discount > 0 && (
-          <p className="text-red-500">
-            Discount: {product.discount}%
-          </p>
-        )}
+        <div>
+  <p className="text-gray-600">
+    {product.discount > 0 && product.discount_type && product.price ? (
+      <>
+        <del>${product.price}</del> {/* Перекреслена стара ціна */}
+        <span className="ml-2">
+          ${product.discount_type === 'percentage' 
+            ? (product.price * (1 - product.discount / 100)).toFixed(2)
+            : (product.price - product.discount).toFixed(2)
+          }
+        </span>
+      </>
+    ) : (
+      <span>${product.price}</span> // Відображення звичайної ціни, якщо знижки немає
+    )}
+  </p>
+
+  {product.discount > 0 && product.discount_type && (
+    product.discount_type === 'percentage' ? (
+      <p className="text-red-500">
+        Discount: {product.discount}%
+      </p>
+    ) : (
+      <p className="text-red-500">
+        Discount: ${product.discount}
+      </p>
+    )
+  )}
+</div>
+
+
         <button
           onClick={handleAddToCart}
           className="mt-2 bg-blue-500 text-white px-4 py-2 rounded"

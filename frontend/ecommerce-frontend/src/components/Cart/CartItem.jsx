@@ -27,7 +27,15 @@ const CartItem = ({ item }) => {
         />
         <div>
           <h3 className="font-semibold">{item.product.name}</h3>
-          <p className="text-gray-600">${item.product.price}</p>
+          <p className="text-gray-600">
+          ${item.product.discount > 0 && item.product.discount_type && item.product.price
+            ? (item.product.discount_type === 'percentage' 
+                ? (item.product.price * (1 - item.product.discount / 100)).toFixed(2)
+                : (item.product.price - item.product.discount).toFixed(2)
+              )
+            : item.product.price
+          }
+          </p>
         </div>
       </div>
       <div className="flex items-center space-x-4">
