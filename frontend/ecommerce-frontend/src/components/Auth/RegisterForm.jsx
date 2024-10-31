@@ -1,105 +1,97 @@
-// src/components/Auth/RegisterForm.jsx
-import React, { useState } from 'react';
-import { Box, TextField, Button, Typography } from '@mui/material';
-import { useDispatch } from 'react-redux';
-import { register } from '../../store/authSlice';
+// components/Auth/RegisterForm.jsx
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { register } from '../../store/authSlice';
 
 const RegisterForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { loading, error } = useSelector((state) => state.auth);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     name: '',
     phone_number: '',
-    address: ''
+    address: '',
   });
-  const [error, setError] = useState('');
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      await dispatch(register(formData)).unwrap();
-      navigate('/');
-    } catch (error) {
-      setError('Registration failed');
+    const result = await dispatch(register(formData));
+    if (!result.error) {
+      navigate('/login');
     }
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 400, mx: 'auto' }}>
-      <Typography variant="h4" align="center" gutterBottom>
-        Register
-      </Typography>
-      {error && (
-        <Typography color="error" align="center" gutterBottom>
-          {error}
-        </Typography>
-      )}
-      <TextField
-        fullWidth
-        label="Name"
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-        margin="normal"
-        required
-      />
-      <TextField
-        fullWidth
-        label="Email"
-        name="email"
-        type="email"
-        value={formData.email}
-        onChange={handleChange}
-        margin="normal"
-        required
-      />
-      <TextField
-        fullWidth
-        label="Password"
-        name="password"
-        type="password"
-        value={formData.password}
-        onChange={handleChange}
-        margin="normal"
-        required
-      />
-      <TextField
-        fullWidth
-        label="Phone Number"
-        name="phone_number"
-        type="tel"
-        value={formData.phone_number}
-        onChange={handleChange}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        label="Address"
-        name="address"
-        value={formData.address}
-        onChange={handleChange}
-        margin="normal"
-      />
-      <Button
-        fullWidth
+    <form onSubmit={handleSubmit} className="max-w-md mx-auto">
+      <div className="mb-4">
+        <label className="block mb-2">Email</label>
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          className="w-full border rounded px-3 py-2"
+          required
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block mb-2">Password</label>
+        <input
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          className="w-full border rounded px-3 py-2"
+          required
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block mb-2">Name</label>
+        <input
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          className="w-full border rounded px-3 py-2"
+          required
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block mb-2">Phone Number</label>
+        <input
+          type="tel"
+          name="phone_number"
+          value={formData.phone_number}
+          onChange={handleChange}
+          className="w-full border rounded px-3 py-2"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block mb-2">Address</label>
+        <textarea
+          name="address"
+          value={formData.address}
+          onChange={handleChange}
+          className="w-full border rounded px-3 py-2"
+          rows="3"
+        />
+      </div>
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+      <button
         type="submit"
-        variant="contained"
-        color="primary"
-        sx={{ mt: 3 }}
+        disabled={loading}
+        className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 disabled:opacity-50"
       >
-        Register
-      </Button>
-    </Box>
+        {loading ? 'Registering...' : 'Register'}
+      </button>
+    </form>
   );
 };
 

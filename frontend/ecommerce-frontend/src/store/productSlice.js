@@ -6,8 +6,8 @@ export const fetchProducts = createAsyncThunk(
   'products/fetchProducts',
   async (params, { rejectWithValue }) => {
     try {
-      const response = await productService.getProducts(params);
-      return response;
+      const data = await productService.getProducts(params);
+      return data;
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -18,8 +18,8 @@ export const fetchProductDetails = createAsyncThunk(
   'products/fetchProductDetails',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await productService.getProductById(id);
-      return response;
+      const data = await productService.getProduct(id);
+      return data;
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -29,8 +29,8 @@ export const fetchProductDetails = createAsyncThunk(
 const productSlice = createSlice({
   name: 'products',
   initialState: {
-    products: [],
-    currentProduct: null,
+    items: [],
+    selectedProduct: null,
     loading: false,
     error: null,
   },
@@ -39,27 +39,17 @@ const productSlice = createSlice({
     builder
       .addCase(fetchProducts.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.loading = false;
-        state.products = action.payload;
+        state.items = action.payload;
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(fetchProductDetails.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
       .addCase(fetchProductDetails.fulfilled, (state, action) => {
-        state.loading = false;
-        state.currentProduct = action.payload;
-      })
-      .addCase(fetchProductDetails.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
+        state.selectedProduct = action.payload;
       });
   },
 });

@@ -1,12 +1,10 @@
 // components/Product/ProductCard.jsx
 import React from 'react';
-import { Card, CardMedia, CardContent, Typography, Button, Box } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../../store/cartSlice';
 
 const ProductCard = ({ product }) => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleAddToCart = () => {
@@ -14,49 +12,30 @@ const ProductCard = ({ product }) => {
   };
 
   return (
-    <Card>
-      <CardMedia
-        component="img"
-        height="200"
-        image={product.image}
+    <div className="border rounded-lg p-4 shadow-sm">
+      <img
+        src={product.image}
         alt={product.name}
+        className="w-full h-48 object-cover"
       />
-      <CardContent>
-        <Typography gutterBottom variant="h6" component="div">
+      <div className="mt-4">
+        <Link to={`/product/${product.id}`} className="text-lg font-semibold">
           {product.name}
-        </Typography>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Typography variant="body1" color="text.primary">
-            ${Number(product.price).toFixed(2)}
-          </Typography>
-          {product.discount > 0 && (
-            <Typography variant="body2" color="error">
-              {product.discount}% OFF
-            </Typography>
-          )}
-        </Box>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          Category: {product.category.name}
-        </Typography>
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button 
-            variant="outlined" 
-            onClick={() => navigate(`/products/${product.id}`)}
-            fullWidth
-          >
-            Details
-          </Button>
-          <Button 
-            variant="contained" 
-            onClick={handleAddToCart}
-            fullWidth
-            disabled={product.quantity === 0}
-          >
-            Add to Cart
-          </Button>
-        </Box>
-      </CardContent>
-    </Card>
+        </Link>
+        <p className="text-gray-600">${product.price}</p>
+        {product.discount > 0 && (
+          <p className="text-red-500">
+            Discount: {product.discount}%
+          </p>
+        )}
+        <button
+          onClick={handleAddToCart}
+          className="mt-2 bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          Add to Cart
+        </button>
+      </div>
+    </div>
   );
 };
 

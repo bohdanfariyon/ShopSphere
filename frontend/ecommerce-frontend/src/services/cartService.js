@@ -1,41 +1,39 @@
 // services/cartService.js
 import axios from '../utils/axios';
-import { API_ROUTES } from './api';
+import { API_ENDPOINTS } from './api';
 
 export const cartService = {
-  getCartItems: async () => {
-    const response = await axios.get(API_ROUTES.CART_ITEMS);
+  getCart: async () => {
+    const response = await axios.get(API_ENDPOINTS.CART);
     return response.data;
   },
 
   addToCart: async (productId, quantity) => {
     const response = await axios.post(
-      `${API_ROUTES.PRODUCTS}${productId}/add-to-cart/`,
+      `${API_ENDPOINTS.PRODUCTS}${productId}/add-to-cart/`,
       { product: productId, quantity }
     );
     return response.data;
   },
 
-  updateQuantity: async (cartItemId, change) => {
+  updateQuantity: async (itemId, change) => {
     const response = await axios.patch(
-      `${API_ROUTES.CART_ITEMS}${cartItemId}/update-quantity/`,
+      `${API_ENDPOINTS.CART}${itemId}/update-quantity/`,
       { change }
     );
     return response.data;
   },
 
-  removeItem: async (cartItemId) => {
-    return await axios.delete(
-      `${API_ROUTES.CART_ITEMS}${cartItemId}/delete-item/`
-    );
+  removeItem: async (itemId) => {
+    return axios.delete(`${API_ENDPOINTS.CART}${itemId}/delete-item/`);
   },
 
   clearCart: async () => {
-    return await axios.delete(API_ROUTES.CLEAR_CART);
+    return axios.delete(`${API_ENDPOINTS.CART}clear-cart/`);
   },
 
   placeOrder: async () => {
-    const response = await axios.post(API_ROUTES.PLACE_ORDER);
+    const response = await axios.post(`${API_ENDPOINTS.CART}place-order/`);
     return response.data;
   },
 };

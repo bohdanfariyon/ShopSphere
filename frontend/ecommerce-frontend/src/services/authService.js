@@ -1,25 +1,20 @@
 // services/authService.js
 import axios from '../utils/axios';
-import { API_ROUTES } from './api';
+import { API_ENDPOINTS } from './api';
 
 export const authService = {
   login: async (credentials) => {
-    const response = await axios.post(API_ROUTES.LOGIN, credentials);
+    const response = await axios.post(API_ENDPOINTS.LOGIN, credentials);
     return response.data;
   },
 
   register: async (userData) => {
-    const response = await axios.post(API_ROUTES.REGISTER, userData);
+    const response = await axios.post(API_ENDPOINTS.REGISTER, userData);
     return response.data;
   },
 
-  getUserProfile: async () => {
-    const response = await axios.get(API_ROUTES.USER_PROFILE);
-    return response.data;
-  },
-
-  updateUserProfile: async (userData) => {
-    const response = await axios.patch(API_ROUTES.USER_PROFILE, userData);
+  getCurrentUser: async () => {
+    const response = await axios.get(API_ENDPOINTS.USER);
     return response.data;
   },
 };

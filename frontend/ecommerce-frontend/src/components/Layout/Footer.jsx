@@ -1,16 +1,13 @@
-// src/components/Layout/Footer.jsx
-import React from 'react';
-import { Box, Typography, Container } from '@mui/material';
-
+// components/Layout/Footer.jsx
 const Footer = () => {
   return (
-    <Box component="footer" sx={{ bgcolor: 'background.paper', py: 6, mt: 'auto' }}>
-      <Container maxWidth="lg">
-        <Typography variant="body2" color="text.secondary" align="center">
-          © {new Date().getFullYear()} E-Shop. All rights reserved.
-        </Typography>
-      </Container>
-    </Box>
+    <footer className="bg-gray-800 text-white py-6">
+      <div className="container mx-auto px-6">
+        <div className="text-center">
+          <p>&copy; 2024 Your Shop. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
   );
 };
 

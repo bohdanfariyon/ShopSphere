@@ -1,86 +1,72 @@
 // components/Product/ProductDetail.jsx
-import React from 'react';
-import { 
-  Box, 
-  Typography, 
-  Button, 
-  Grid, 
-  Paper,
-  Rating,
-  Divider 
-} from '@mui/material';
-import { useDispatch } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchProductDetails } from '../../store/productSlice';
 import { addToCart } from '../../store/cartSlice';
 import ProductReview from './ProductReview';
 
-const ProductDetail = ({ product }) => {
+const ProductDetail = () => {
+  const { id } = useParams();
   const dispatch = useDispatch();
+  const { selectedProduct, loading } = useSelector((state) => state.products);
+  const [quantity, setQuantity] = useState(1);
+
+  useEffect(() => {
+    dispatch(fetchProductDetails(id));
+  }, [dispatch, id]);
 
   const handleAddToCart = () => {
-    dispatch(addToCart({ productId: product.id, quantity: 1 }));
+    dispatch(addToCart({ productId: id, quantity }));
   };
 
+  if (loading || !selectedProduct) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <Paper sx={{ p: 3 }}>
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={6}>
+    <div className="max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
           <img
-            src={product.image}
-            alt={product.name}
-            style={{ width: '100%', maxHeight: '500px', objectFit: 'cover' }}
+            src={selectedProduct.image}
+            alt={selectedProduct.name}
+            className="w-full rounded-lg"
           />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Typography variant="h4" gutterBottom>
-            {product.name}
-          </Typography>
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="h5" color="primary" component="span">
-              ${Number(product.price).toFixed(2)}
-            </Typography>
-            {product.discount > 0 && (
-              <Typography 
-                variant="body1" 
-                color="error" 
-                component="span" 
-                sx={{ ml: 2 }}
-              >
-                {product.discount}% OFF
-              </Typography>
-            )}
-          </Box>
-          <Typography variant="body1" sx={{ mb: 2 }}>
-            Category: {product.category.name}
-          </Typography>
-          <Typography variant="body1" sx={{ mb: 2 }}>
-            Available: {product.quantity} units
-          </Typography>
-          <Typography variant="body1" sx={{ mb: 3 }}>
-            {product.description}
-          </Typography>
-          <Button 
-            variant="contained" 
-            size="large"
-            onClick={handleAddToCart}
-            disabled={product.quantity === 0}
-            fullWidth
-          >
-            Add to Cart
-          </Button>
-        </Grid>
-      </Grid>
-      
-      <Divider sx={{ my: 4 }} />
-      
-      <Box>
-        <Typography variant="h5" gutterBottom>
-          Reviews
-        </Typography>
-        {product.reviews.map((review) => (
+        </div>
+        <div>
+          <h1 className="text-3xl font-bold mb-4">{selectedProduct.name}</h1>
+          <p className="text-xl mb-4">${selectedProduct.price}</p>
+          {selectedProduct.discount > 0 && (
+            <p className="text-red-500 mb-4">
+              Discount: {selectedProduct.discount}%
+            </p>
+          )}
+          <p className="mb-6">{selectedProduct.description}</p>
+          <div className="flex items-center gap-4 mb-6">
+            <input
+              type="number"
+              min="1"
+              value={quantity}
+              onChange={(e) => setQuantity(Number(e.target.value))}
+              className="border rounded px-3 py-2 w-20"
+            />
+            <button
+              onClick={handleAddToCart}
+              className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
+            >
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="mt-12">
+        <h2 className="text-2xl font-bold mb-6">Reviews</h2>
+        {selectedProduct.reviews.map((review) => (
           <ProductReview key={review.id} review={review} />
         ))}
-      </Box>
-    </Paper>
+      </div>
+    </div>
   );
 };
 

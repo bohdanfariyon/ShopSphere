@@ -1,48 +1,66 @@
 // components/Cart/CartList.jsx
-import React from 'react';
-import { Box, Typography, Button, Divider } from '@mui/material';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchCart } from '../../store/cartSlice';
 import CartItem from './CartItem';
-import { useDispatch } from 'react-redux';
-import { clearCart } from '../../store/cartSlice';
+import { cartService } from '../../services/cartService';
 
-const CartList = ({ items }) => {
+const CartList = () => {
   const dispatch = useDispatch();
+  const { items, loading } = useSelector((state) => state.cart);
 
-  const calculateTotal = () => {
-    return items.reduce((total, item) => {
-      return total + (item.quantity * Number(item.product.price));
-    }, 0);
+  const handleClearCart = async () => {
+    await cartService.clearCart();
+    dispatch(fetchCart());
   };
 
-  const handleClearCart = () => {
-    dispatch(clearCart());
+  const handlePlaceOrder = async () => {
+    await cartService.placeOrder();
+    dispatch(fetchCart());
   };
+
+  if (loading) {
+    return <div>Loading cart...</div>;
+  }
+
+  const total = items.reduce(
+    (sum, item) => sum + item.product.price * item.quantity,
+    0
+  );
 
   return (
-    <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-        <Typography variant="h5">Shopping Cart</Typography>
-        <Button 
-          variant="outlined" 
-          color="error" 
-          onClick={handleClearCart}
-          disabled={items.length === 0}
-        >
-          Clear Cart
-        </Button>
-      </Box>
-      
-      {items.map((item) => (
-        <CartItem key={item.id} item={item} />
-      ))}
-
-      <Divider sx={{ my: 3 }} />
-      
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-        <Typography variant="h6">Total:</Typography>
-        <Typography variant="h6">${calculateTotal().toFixed(2)}</Typography>
-      </Box>
-    </Box>
+    <div>
+      {items.length === 0 ? (
+        <p className="text-center py-8">Your cart is empty</p>
+      ) : (
+        <>
+          <div className="space-y-4">
+            {items.map((item) => (
+              <CartItem key={item.id} item={item} />
+            ))}
+          </div>
+          <div className="mt-8 border-t pt-4">
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-xl font-bold">Total:</span>
+              <span className="text-xl">${total.toFixed(2)}</span>
+            </div>
+            <div className="flex gap-4">
+              <button
+                onClick={handleClearCart}
+                className="px-4 py-2 border border-red-500 text-red-500 rounded hover:bg-red-50"
+              >
+                Clear Cart
+              </button>
+              <button
+                onClick={handlePlaceOrder}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                Place Order
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
   );
 };
 

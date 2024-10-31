@@ -1,47 +1,30 @@
 // pages/Home.jsx
 import React, { useEffect } from 'react';
-import { Container, Typography, Button, Box } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import ProductList from '../components/Product/ProductList';
-
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { fetchProducts } from '../store/productSlice';
+import ProductCard from '../components/Product/ProductCard';
 
 const Home = () => {
-  const navigate = useNavigate();
-  const { products } = useSelector((state) => state.products);
   const dispatch = useDispatch();
+  const { items, loading } = useSelector((state) => state.products);
 
   useEffect(() => {
-    dispatch(fetchProducts({ sort_field: 'created_at', sort_order: 'desc', limit: 6 }));
+    dispatch(fetchProducts());
   }, [dispatch]);
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ py: 8, textAlign: 'center' }}>
-        <Typography variant="h2" component="h1" gutterBottom>
-          Welcome to Our Store
-        </Typography>
-        <Typography variant="h5" color="text.secondary" paragraph>
-          Discover our latest products and best deals
-        </Typography>
-        <Button
-          variant="contained"
-          size="large"
-          onClick={() => navigate('/products')}
-          sx={{ mt: 4 }}
-        >
-          Browse All Products
-        </Button>
-      </Box>
-      
-      <Box sx={{ py: 6 }}>
-        <Typography variant="h4" gutterBottom>
-          Latest Products
-        </Typography>
-        <ProductList products={products} />
-      </Box>
-    </Container>
+    <div className="container mx-auto px-6 py-8">
+      <h1 className="text-2xl font-bold mb-6">Products</h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {items.map((product) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
+      </div>
+    </div>
   );
 };
 

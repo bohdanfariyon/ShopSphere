@@ -1,20 +1,26 @@
 // components/Product/ProductReview.jsx
-import React from 'react';
-import { Box, Typography, Rating, Paper } from '@mui/material';
-
 const ProductReview = ({ review }) => {
   return (
-    <Paper sx={{ p: 2, mb: 2 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-        <Rating value={review.rating} readOnly />
-        <Typography variant="body2" color="text.secondary">
+    <div className="border-b py-4">
+      <div className="flex items-center gap-2 mb-2">
+        <div className="flex">
+          {[...Array(5)].map((_, index) => (
+            <span
+              key={index}
+              className={`text-xl ${
+                index < review.rating ? 'text-yellow-400' : 'text-gray-300'
+              }`}
+            >
+              ★
+            </span>
+          ))}
+        </div>
+        <span className="text-gray-500">
           {new Date(review.created_at).toLocaleDateString()}
-        </Typography>
-      </Box>
-      <Typography variant="body1">
-        {review.comment}
-      </Typography>
-    </Paper>
+        </span>
+      </div>
+      <p>{review.comment}</p>
+    </div>
   );
 };
 
