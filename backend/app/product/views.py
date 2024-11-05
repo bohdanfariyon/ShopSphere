@@ -108,7 +108,7 @@ class ProductView(viewsets.ReadOnlyModelViewSet):
     )
     @action(methods=['POST'], detail=True, url_path='add-to-cart')
     def add_to_cart(self, request, pk=None):
-        """Add product to cart"""
+        """Add product to cart or update quantity if product already exists"""
         product = self.get_object()
         data = request.data.copy()
         
@@ -123,29 +123,34 @@ class ProductView(viewsets.ReadOnlyModelViewSet):
 
         # Use a transaction to ensure stock is updated correctly
         with transaction.atomic():
-            # Decrease the quantity of the product
+            # Get or create cart for the user
+            cart, _ = Cart.objects.get_or_create(user=self.request.user)
+            
+            # Try to get existing cart item
+            cart_item, created = CartItem.objects.get_or_create(
+                cart=cart,
+                product=product,
+                defaults={
+                    'quantity': quantity_requested
+                }
+            )
+            
+            if not created:
+                # If cart item exists, update the quantity
+                cart_item.quantity += quantity_requested
+                cart_item.save()
+            
+            # Decrease the product quantity
             product.quantity -= quantity_requested
             product.save()
 
-            # Add product_id to the request data
-            data['product'] = product.id
-            
-            serializer = serializers.Cart1ItemSerializer(data=data)
-            
-            if serializer.is_valid():
-                cart, created = Cart.objects.get_or_create(user=self.request.user)
-                cart_item = serializer.save(cart=cart)
-
-                # Optionally return the updated cart data or cart item
-                return Response(
-                    {
-                        "cart_item": serializers.Cart1ItemSerializer(cart_item).data,
-                        "message": "Product added to cart successfully."
-                    },
-                    status=status.HTTP_201_CREATED
-                )
-            
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "cart_item": serializers.Cart1ItemSerializer(cart_item).data,
+                    "message": "Product added to cart successfully."
+                },
+                status=status.HTTP_201_CREATED
+            )
 
 
 class CartView(mixins.ListModelMixin, viewsets.GenericViewSet):
