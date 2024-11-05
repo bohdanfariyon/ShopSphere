@@ -43,7 +43,7 @@ class ProductView(viewsets.ReadOnlyModelViewSet):
     queryset = Product.objects.all()
     serializer_class = serializers.DetailProductSerializer
     filter_backends = (filters.SearchFilter,)
-    search_fields = ['name']
+    search_fields = ['name'] 
 
     def get_serializer_class(self):
         if self.action == 'list':
