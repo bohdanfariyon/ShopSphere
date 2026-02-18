@@ -16,9 +16,26 @@ from drf_spectacular.utils import (
 )
 from core.models import Product, Category, Cart, CartItem, Order, OrderItem
 
+from rest_framework.pagination import PageNumberPagination
+
+class ProductPagination(PageNumberPagination):
+    page_size = 12  
+    page_size_query_param = 'page_size'  
+    max_page_size = 100
+
 @extend_schema_view(
     list=extend_schema(
         parameters=[
+            OpenApiParameter(
+                'page',
+                OpenApiTypes.INT,
+                description='Номер сторінки'
+            ),
+            OpenApiParameter(
+                'page_size', 
+                OpenApiTypes.INT, 
+                description='Кількість елементів на сторінку'
+            ),
             OpenApiParameter(
                 'category',
                 OpenApiTypes.STR,
@@ -42,6 +59,7 @@ class ProductView(viewsets.ReadOnlyModelViewSet):
     authentication_classes = [TokenAuthentication]
     queryset = Product.objects.all()
     serializer_class = serializers.DetailProductSerializer
+    pagination_class = ProductPagination
     filter_backends = (filters.SearchFilter,)
     search_fields = ['name'] 
 
@@ -56,28 +74,31 @@ class ProductView(viewsets.ReadOnlyModelViewSet):
             return self.serializer_class
 
     def get_queryset(self):
-        # Отримання назви категорії з параметрів запиту
-        category_name = self.request.query_params.get('category', None)
+        # 1. Отримуємо параметри
+        category_name = self.request.query_params.get('category')
+        sort_field = self.request.query_params.get('sort_field')
+        sort_order = self.request.query_params.get('sort_order', 'asc')
 
-        # Отримання поля сортування і порядку (asc/desc) з параметрів запиту
-        sort_field = self.request.query_params.get('sort_field', 'name')  # Поле за замовчуванням - 'name'
-        sort_order = self.request.query_params.get('sort_order', 'asc')   # За замовчуванням - за зростанням
+        # 2. Визначаємо дефолтне поле, якщо прийшло порожнє значення
+        if not sort_field:
+            sort_field = 'name'
 
-        # Формування порядку сортування
+        # 3. Формуємо префікс для спадання
         if sort_order == 'desc':
-            sort_field = f'-{sort_field}'  # Додаємо '-' для спаду
+            sort_field = f'-{sort_field}'
 
-        # Якщо не вказано категорію, повертаємо всі продукти
-        if category_name is None or category_name == 'All':
-            return self.queryset.order_by(sort_field).distinct()
+        # 4. Базова вибірка з сортуванням
+        queryset = self.queryset.order_by(sort_field).distinct()
 
-        # Отримання категорії за назвою
-        try:
-            category = Category.objects.get(name=category_name)
-            return self.queryset.filter(category=category).order_by(sort_field).distinct()
-        except Category.DoesNotExist:
-        # Якщо категорії не існує, повертаємо порожній queryset
-            return self.queryset.none()
+        # 5. Фільтрація за категорією
+        if category_name and category_name != 'All':
+            try:
+                category = Category.objects.get(name=category_name)
+                queryset = queryset.filter(category=category)
+            except Category.DoesNotExist:
+                return self.queryset.none()
+
+        return queryset
     @extend_schema(
         request=serializers.ReviewSerializer,
         responses={201: serializers.ReviewSerializer},

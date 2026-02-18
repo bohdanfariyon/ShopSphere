@@ -30,24 +30,34 @@ const productSlice = createSlice({
   name: 'products',
   initialState: {
     items: [],
-    selectedProduct: null,
+    count: 0, 
+    currentPage: 1,
     loading: false,
     error: null,
+    selectedProduct: null,
   },
-  reducers: {},
+  reducers: {
+    setPage: (state, action) => {
+      state.currentPage = action.payload;
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchProducts.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = action.payload;
+        // Правильно: беремо дані з ключа results
+        state.items = action.payload.results; 
+        state.count = action.payload.count;
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
+      
       .addCase(fetchProductDetails.fulfilled, (state, action) => {
         state.selectedProduct = action.payload;
       });
@@ -55,3 +65,4 @@ const productSlice = createSlice({
 });
 
 export default productSlice.reducer;
+export const { setPage } = productSlice.actions;
