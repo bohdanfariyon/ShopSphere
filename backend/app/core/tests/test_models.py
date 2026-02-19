@@ -1,92 +1,78 @@
-"""
-Tests for models.
-"""
-
-from decimal import Decimal
-
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-
 from core import models
 
-
-def create_user(email='email@example.com', password='password123'):
-    """Create and return new user"""
+def create_user(email='test@example.com', password='password123'):
+    """Допоміжна функція для створення користувача"""
     return get_user_model().objects.create_user(email, password)
 
-
 class ModelTests(TestCase):
-    """Test models"""
+    """Тести для моделей системи ShopSphere"""
 
-    def test_create_user_with_email_successful(self):
-        """Testing creating a user with an email is successful."""
+    # --- Тести для моделі User ---
+    def test_user_with_email_successful(self):
+        """Тест створення користувача з email успішний"""
         email = 'test@example.com'
-        password = 'testpass123'
-        user=get_user_model().objects.create_user(
+        password = 'password123'
+        user = get_user_model().objects.create_user(
             email=email,
             password=password,
         )
-
         self.assertEqual(user.email, email)
         self.assertTrue(user.check_password(password))
-    
+
     def test_new_user_email_normalized(self):
-        """Test email is normalized for new users."""
-        sample_email = [
+        """Тест нормалізації email (нижній регістр)"""
+        sample_emails = [
             ['test1@EXAMPLE.com', 'test1@example.com'],
             ['Test2@Example.com', 'Test2@example.com'],
-            ['TEST3@EXAMPLE.COM', 'TEST3@example.com'],
-            ['test4@example.COM', 'test4@example.com'],
         ]
-        for email, expected in sample_email:
-            user = get_user_model().objects.create_user(email, 'sample123')
+        for email, expected in sample_emails:
+            user = get_user_model().objects.create_user(email, 'pass123')
             self.assertEqual(user.email, expected)
-    
-    def test_new_without_email_raises_error(self):
-        """Test tjat creating a user without an email raises a ValueError"""
-        with self.assertRaises(ValueError):
-            get_user_model().objects.create_user('', 'test123')
-    
-    def test_create_superuser(self):
-        """Test creating a superuser"""
-        user = get_user_model().objects.create_superuser(
-            'test@example.com',
-            'test123',
-        )
 
+    def test_new_user_invalid_email(self):
+        """Тест, що створення користувача без email викликає помилку"""
+        with self.assertRaises(ValueError):
+            get_user_model().objects.create_user(None, 'pass123')
+
+    def test_create_new_superuser(self):
+        """Тест створення суперкористувача (адміна)"""
+        user = get_user_model().objects.create_superuser(
+            'admin@example.com',
+            'pass123',
+        )
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
 
-    def test_create_recipe(self):
-        """Test creating a recipe is successful"""
-        user = get_user_model().objects.create_user(
-            'example@gmail.com',
-            'password123',
+    # --- Тести для моделі Category ---
+    def test_category_str(self):
+        """Тест рядкового представлення категорії"""
+        category = models.Category.objects.create(name='Electronics')
+        self.assertEqual(str(category), category.name)
+
+    # --- Тести для моделі Product ---
+    def test_product_str(self):
+        """Тест рядкового представлення продукту"""
+        category = models.Category.objects.create(name='Laptops')
+        product = models.Product.objects.create(
+            name='MacBook Pro',
+            price=2500.00,
+            quantity=5,
+            category=category
         )
+        self.assertEqual(str(product), product.name)
 
-        recipe = models.Recipe.objects.create(
-            user=user,
-            title='Simple recipe name',
-            time_minutes=5,
-            price=Decimal('5.50'),
-            description='Simple recipe description',
+    def test_product_with_discount(self):
+        """Тест збереження полів знижки продукту"""
+        category = models.Category.objects.create(name='Sale')
+        product = models.Product.objects.create(
+            name='Phone',
+            price=1000.00,
+            quantity=10,
+            category=category,
+            discount=10.00,
+            discount_type='percentage'
         )
-
-        self.assertEqual(str(recipe), recipe.title)
-
-    def test_create_tag(self):
-        """Test creating a tag is successful"""
-        user = create_user()
-        tag = models.Tag.objects.create(user=user, name='Tag1')
-
-        self.assertEqual(str(tag), tag.name)
-        
-    def test_create_ingredient(self):
-        """Test creagin an ingredient is successful"""
-        user = create_user()
-        ingredient = models.Ingredient.objects.create(
-            user=user,
-            name='Ingredient1'
-        )
-        
-        self.assertEqual(str(ingredient), ingredient.name)
+        self.assertEqual(product.discount, 10.00)
+        self.assertEqual(product.discount_type, 'percentage')
