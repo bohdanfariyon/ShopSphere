@@ -9,7 +9,6 @@ def create_user(email='test@example.com', password='password123'):
 class ModelTests(TestCase):
     """Тести для моделей системи ShopSphere"""
 
-    # --- Тести для моделі User ---
     def test_user_with_email_successful(self):
         """Тест створення користувача з email успішний"""
         email = 'test@example.com'
@@ -45,13 +44,11 @@ class ModelTests(TestCase):
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
 
-    # --- Тести для моделі Category ---
     def test_category_str(self):
         """Тест рядкового представлення категорії"""
         category = models.Category.objects.create(name='Electronics')
         self.assertEqual(str(category), category.name)
 
-    # --- Тести для моделі Product ---
     def test_product_str(self):
         """Тест рядкового представлення продукту"""
         category = models.Category.objects.create(name='Laptops')
