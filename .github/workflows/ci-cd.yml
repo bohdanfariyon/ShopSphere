@@ -20,8 +20,7 @@ jobs:
         run: docker build --build-arg DEV=true -t shopsphere-image .
 
       - name: Run Django Tests
-        # Запускаємо тести всередині зібраного контейнера (тут working-directory не потрібен, бо образ вже зібрано)
-        run: docker run shopsphere-image sh -c "python manage.py test"
+        run: docker run -e DATABASE_URL="sqlite://:memory:" shopsphere-image sh -c "python manage.py test"
 
   deploy:
     name: Deploy to Render
