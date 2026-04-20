@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-_ikb&q=52oap9iv0bd2b2t1g&jnv&yq^2%0-_rxloa2)r1#qmt
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['shopsphere-optz.onrender.com', 'localhost', '127.0.0.1']
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 # Application definition
@@ -155,4 +156,3 @@ if database_url:
         conn_max_age=600,
         conn_health_checks=True,
     )
-    
