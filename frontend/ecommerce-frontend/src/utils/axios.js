@@ -1,7 +1,7 @@
 // utils/axios.js
 import axios from 'axios';
 
-const baseURL = 'http://localhost:8000/api';
+const baseURL = 'https://shopsphere-optz.onrender.com/api'//'http://localhost:8000/api';
 
 const axiosInstance = axios.create({
   baseURL,
