@@ -1,0 +1,37 @@
+name: ShopSphere CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        # Вказуємо, що цю команду треба запускати в папці backend
+        working-directory: ./backend
+        run: docker build --build-arg DEV=true -t shopsphere-image .
+
+      - name: Run Django Tests
+        # Запускаємо тести всередині зібраного контейнера (тут working-directory не потрібен, бо образ вже зібрано)
+        run: docker run shopsphere-image sh -c "python manage.py test"
+
+  deploy:
+    name: Deploy to Render
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render Deploy
+        env:
+          DEPLOY_URL: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          echo "Triggering deploy on Render..."
+          curl -X POST "$DEPLOY_URL"

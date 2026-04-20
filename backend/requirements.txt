@@ -9,3 +9,4 @@ pytest-django
 pytest-cov
 locust
 gunicorn
+dj-database-url>=2.1.0
